@@ -81,6 +81,18 @@ class Graph {
 
     return visitedArray;
   }
+//recursively
+  depthFirstSearch(start, visited = new Set()) {
+    /* Start at start and add to visited set as we visit */
+
+    visited.add(start);
+    for (let neighbor of start.adjacent) {
+      if (!visited.has(neighbor)) {
+        this.depthFirstSearch(neighbor, visited);
+      }
+    }
+    return Array.from(visited).map(node => node.value);
+  }
 
   /** traverse graph with BDS and returns array of Node values */
   breadthFirstSearch(start) {
@@ -105,21 +117,37 @@ class Graph {
   }
 
   /** find the distance of the shortest path from the start vertex to the end vertex */
-  distanceOfShortestPath(start, end, visited= new Set()) {
+  distanceOfShortestPath(start, end) {
     /* Recursion with Math.min +1
     return 0 when it reaches end
      */
 
+    // if (start === end) return 0;
+    // visited.add(start);
+    // let adjacents = Array.from(start.adjacent);
+
+    // let notVisited = adjacents.filter(adjacent => !visited.has(adjacent));
+
+    // return Math.min(notVisited.map(adjacent =>
+    //   this.distanceOfShortestPath(adjacent, end, visited))
+    // ) + 1;
+    // better to do iteratively
+
     if (start === end) return 0;
-    visited.add(start);
-    let adjacents = Array.from(start.adjacent);
 
-    let notVisited = adjacents.filter(adjacent => !visited.has(adjacent));
-
-    return Math.min(notVisited.map(adjacent =>
-      this.distanceOfShortestPath(adjacent, end, visited))
-    ) + 1;
-
+    let visited = new Set();
+    let toVisitQueue = [[start, 0]];
+//would pop work?
+    while (toVisitQueue.length) {
+      let [current, distance] = toVisitQueue.shift();
+      if (current === end) return distance;
+        for (let neighbor of current.adjacent) {
+          if (!visited.has(neighbor)) {
+            visited.add(neighbor);
+            toVisitQueue.push([neighbor, distance + 1]);
+        }
+      }
+    }
   }
 
 }
