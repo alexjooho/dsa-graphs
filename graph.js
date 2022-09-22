@@ -16,25 +16,25 @@ class Graph {
   }
 
   /** add Node instance and add it to nodes property on graph. */
-  addVertex(vertex) { 
+  addVertex(vertex) {
     this.nodes.add(vertex);
   }
 
   /** add array of new Node instances and adds to them to nodes property. */
-  addVertices(vertexArray) { 
-    for(let vertex of vertexArray) {
+  addVertices(vertexArray) {
+    for (let vertex of vertexArray) {
       this.nodes.add(vertex);
     }
   }
 
   /** add edge between vertices v1,v2 */
-  addEdge(v1, v2) { 
+  addEdge(v1, v2) {
     v1.adjacent.add(v2);
     v2.adjacent.add(v1);
-   }
+  }
 
   /** remove edge between vertices v1,v2 */
-  removeEdge(v1, v2) { 
+  removeEdge(v1, v2) {
     v1.adjacent.delete(v2);
     v2.adjacent.delete(v1);
   }
@@ -45,72 +45,83 @@ class Graph {
    * - update any adjacency lists using that vertex
    */
   removeVertex(vertex) {
-    let neighbors = vertex.adjacent
-    
-    for(let neighbor of neighbors) {
+    let neighbors = vertex.adjacent;
+
+    for (let neighbor of neighbors) {
       neighbor.adjacent.delete(vertex);
     }
     // you can iterate over a set like this?
-    
+
     vertex.adjacent.clear();
     this.nodes.delete(vertex);
-   }
+  }
 
   /** traverse graph with DFS and returns array of Node values */
-  depthFirstSearch(start) { 
+  depthFirstSearch(start) {
     /* Start at start and add to visited set as we visit
     use a stack (implemented by an array) to traverse and pop off values
     Use a while loop with a current node */
-    
+
     let visited = new Set();
-    let toVisitStack = [start]
-    
-    while(toVisitStack.length) {
+    let toVisitStack = [start];
+
+    while (toVisitStack.length) {
       let current = toVisitStack.pop();
-      visited.add(current.value)
-      
-      for(let neighbor of current.adjacent) {
-        
-        if(!visited.has(neighbor.value)) {
+      visited.add(current.value);
+
+      for (let neighbor of current.adjacent) {
+
+        if (!visited.has(neighbor.value)) {
           toVisitStack.push(neighbor);
         }
       }
     }
-    
+
     let visitedArray = Array.from(visited);
-    
+
     return visitedArray;
-   }
+  }
 
   /** traverse graph with BDS and returns array of Node values */
-  breadthFirstSearch(start) { 
+  breadthFirstSearch(start) {
     let visited = new Set();
-    let toVisitQueue = [start]
-    
-    while(toVisitQueue.length) {
+    let toVisitQueue = [start];
+
+    while (toVisitQueue.length) {
       let current = toVisitQueue.shift();
-      visited.add(current.value)
-      
-      for(let neighbor of current.adjacent) {
-        
-        if(!visited.has(neighbor.value)) {
+      visited.add(current.value);
+
+      for (let neighbor of current.adjacent) {
+
+        if (!visited.has(neighbor.value)) {
           toVisitQueue.push(neighbor);
         }
       }
     }
-    
+
     let visitedArray = Array.from(visited);
-    
+
     return visitedArray;
   }
 
   /** find the distance of the shortest path from the start vertex to the end vertex */
-  distanceOfShortestPath(start, end) { 
+  distanceOfShortestPath(start, end, visited= new Set()) {
     /* Recursion with Math.min +1
     return 0 when it reaches end
      */
+
+    if (start === end) return 0;
+    visited.add(start);
+    let adjacents = Array.from(start.adjacent);
+
+    let notVisited = adjacents.filter(adjacent => !visited.has(adjacent));
+
+    return Math.min(notVisited.map(adjacent =>
+      this.distanceOfShortestPath(adjacent, end, visited))
+    ) + 1;
+
   }
-  
+
 }
 
-module.exports = { Graph, Node }
+module.exports = { Graph, Node };
